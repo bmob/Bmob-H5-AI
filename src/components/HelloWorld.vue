@@ -1,26 +1,23 @@
 <template>
     <div>
-        <div class="main-right">
-            <div class="lists order-table box-sh">
-                <div class="box-chat">
-                    <div v-for="item in list" :key="item.id" class="item" :class="{ 'item-my' : item.isMy}">
-                        <img v-if="item.isMy" class="avatar" src="../assets/bmob.png">
-                        <img v-else class="avatar" src="../assets/helper.png">
-                        <div class="dialog">
-                            <vue-markdown :source="item.content" />
-                        </div>
-                    </div>
+        <div class="banner">Bmob AI Demo</div>
+        <div class="box-chat">
+            <div v-for="item in list" :key="item.id" class="item" :class="{ 'item-my' : item.isMy}">
+                <img v-if="item.isMy" class="avatar" src="../assets/bmob.png">
+                <img v-else class="avatar" src="../assets/helper.png">
+                <div class="dialog">
+                    <vue-markdown :source="item.content" />
                 </div>
-                <div class="row-send">
-                    <div class="btn-clean" @click="cleanList">
-                        <img src="../assets/clean.png">
-                        <span>新主题</span>
-                    </div>
-                    <input v-model="msg" placeholder="输入你想问的..." size="normal" @keyup.enter="onSubmit" />
-                    <div class="btn-send" @click="onSubmit">
-                        <img src="../assets/send.png" />
-                    </div>
-                </div>
+            </div>
+        </div>
+        <div class="row-send">
+            <div class="btn-clean" @click="cleanList">
+                <img src="../assets/clean.png">
+                <span>新主题</span>
+            </div>
+            <input v-model="msg" placeholder="输入你想问的..." size="normal" @keyup.enter="onSubmit" />
+            <div class="btn-send" @click="onSubmit">
+                <img src="../assets/send.png" />
             </div>
         </div>
     </div>
@@ -45,6 +42,7 @@ export default {
             lastId: '',
 
             userId: '',
+            leftCount: 0
         }
     },
     mounted() {
@@ -54,15 +52,26 @@ export default {
         }).catch(err => {
             console.error(err)
         });
+        this.leftCount = this.getLeftAiCount()
+        console.log('this.leftCount',this.leftCount )
     },
 
     methods: {
+        setLeftAiCount(count) {
+            console.log('setLeftAiCount',count )
+            localStorage.setItem('lac',count)
+        }, 
+        getLeftAiCount() {
+           let res = localStorage.getItem('lac')
+           if(!res && res!=0) res = 20
+           return res;
+        },
         cleanList() {
             this.list = this.$options.data().list
         },
         initChatAi() {
             this.ChatAi = Bmob.ChatAI()
-            this.loadDefault()
+            // this.loadDefault() // 加载最近聊天记录
 
             let msg = ''
             this.ChatAi.onMessage((res) => {
@@ -84,6 +93,11 @@ export default {
             })
         },
         onSubmit() {
+            if (this.leftCount <= 0) {
+                alert('您的提问次数已达上限，注册登录后可继续使用')
+                window.open('https://www.bmobapp.com/helper/index')
+                return
+            }
             if (this.userId && this.msg && !this.lastId) {
                 const msg = this.msg
                 this.list.push({
@@ -105,6 +119,7 @@ export default {
                 try{
                     this.ChatAi.send(JSON.stringify(data))
                     this.lastId = id
+                    this.setLeftAiCount(--this.leftCount)
                 }catch(err){
                     console.error(err)
                 }

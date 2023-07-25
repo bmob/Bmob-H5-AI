@@ -1,14 +1,27 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+.banner{
+    background: rgb(0, 141, 249);
+    text-align: center;
+    height: 15vh;
+    line-height: 15vh;
+    color: white;
+    font-size: 4vh;
+}
+
 .box-chat {
-    height: calc(100vh - 200px);
-    /* height: calc(100vh - 400px); */
+    height: calc(85vh - 100px);
     overflow-y: auto;
-    padding-bottom: 20px;
+    padding: 20px 8.8vw 0 10vw;
+    margin-bottom: 20px;
 }
 
 .box-chat .item {
     display: flex;
     justify-content: flex-start;
-    margin: 0 10px 10px 0;
+    margin: 0 0 10px 0;
 }
 
 .box-chat .avatar {
@@ -106,7 +119,7 @@
     outline: none;
     padding: 0 15px;
     transition: border-color .2s cubic-bezier(.645, .045, .355, 1);
-    width: 80vw;
+    flex: 1;
 }
 
 
@@ -133,7 +146,13 @@
 
 @media screen and (max-width: 768px) and (min-width:320px) {
     .box-chat {
-        height: calc(100vh - 150px);
+        padding: 10px;
+    }
+    .row-send{
+        padding: 0 10px;
+    }
+    .row-send .btn-send {
+        right: 20px;
     }
 }
 
